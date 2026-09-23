@@ -1,0 +1,56 @@
+.moa-button {
+  --look-x: 0px;
+  --look-y: 0px;
+  position: relative;
+  display: block;
+  width: 220px;
+  height: 196px;
+  margin: -1px auto 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 45%;
+  background: transparent;
+  cursor: pointer;
+}
+.moa-button::before {
+  content: '';
+  position: absolute;
+  inset: 12px -10px 14px;
+  background: radial-gradient(ellipse, #ede4f080, transparent 68%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.moa-art { position: relative; width: 220px; height: 191px; display: block; overflow: visible; }
+.moa-head { transform-origin: 119px 135px; }
+.moa-tail { transform-origin: 165px 165px; }
+.moa-ear-left { transform-origin: 77px 72px; transition: transform .3s ease; }
+.moa-ear-right { transform-origin: 159px 69px; transition: transform .3s ease; }
+.moa-front-paw { transform-origin: 97px 159px; }
+.moa-eyes-open { opacity: 1; }
+.moa-eyes-closed { opacity: 0; }
+.moa-gaze { transform: translate(var(--look-x), var(--look-y)); transition: transform .15s ease-out; }
+.moa-brows { opacity: 0; }
+.moa-heart { opacity: 0; transform-origin: 185px 53px; pointer-events: none; }
+.moa-sleep { opacity: 0; }
+.moa-caption { position: absolute; bottom: -2px; left: 0; width: 100%; color: #9b89a8; font-size: 9px; line-height: 1.5; letter-spacing: .2px; }
+.moa-caption > span { position: absolute; left: calc(50% + 12px); white-space: nowrap; color: #a69aaf; opacity: 0; transition: opacity .2s; }
+.moa-button:hover .moa-caption > span, .moa-button:focus-visible .moa-caption > span { opacity: 1; }
+.moa-button.sleepy .moa-eyes-open { opacity: 0; }
+.moa-button.sleepy .moa-eyes-closed, .moa-button.sleepy .moa-sleep { opacity: 1; }
+.moa-button.sleepy .moa-head { transform: translateY(3px) rotate(-5deg); }
+.moa-button.watchful .moa-ear-right { transform: rotate(5deg); }
+.moa-button.watchful .moa-ear-left { transform: rotate(-4deg); }
+.moa-button.watchful .moa-brows { opacity: .65; }
+.moa-button.worried .moa-ear-left { transform: rotate(-11deg); }
+.moa-button.worried .moa-ear-right { transform: rotate(11deg); }
+.moa-button.worried .moa-brows { opacity: 1; }
+.moa-button.worried .moa-head { transform: translateY(3px) rotate(3deg); }
+.moa-button.worried::before { background: radial-gradient(ellipse, #f2e0d980, transparent 68%); }
+@media (max-width: 600px) {
+  .moa-button { width: 200px; height: 178px; margin-top: -3px; margin-bottom: 10px; }
+  .moa-art { width: 200px; height: 173px; }
+  .moa-caption { font-size: 8px; bottom: -1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moa-button *, .moa-button::before { animation: none !important; transition: none !important; }
+}
