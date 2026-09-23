@@ -44,6 +44,44 @@ function Icon({ name, size = 20 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name] || paths.spark} /></svg>;
 }
 
+function CatAvatar({ mood }) {
+  return <svg className={`cat-avatar ${mood}`} viewBox="0 0 180 154" role="img" aria-label="재정 상태를 표현하는 고양이 모아">
+    <defs>
+      <linearGradient id="cat-fur" x1="35" y1="20" x2="140" y2="145" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#d8c7ee" /><stop offset=".52" stopColor="#b8a3d7" /><stop offset="1" stopColor="#9c86c1" />
+      </linearGradient>
+      <linearGradient id="cat-chest" x1="72" y1="76" x2="106" y2="142" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#f8eef5" /><stop offset="1" stopColor="#e8d6e8" />
+      </linearGradient>
+      <filter id="cat-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="7" floodColor="#675477" floodOpacity=".18" /></filter>
+    </defs>
+    <ellipse className="cat-ground" cx="91" cy="140" rx="51" ry="8" />
+    <g filter="url(#cat-shadow)">
+      <path className="cat-tail" d="M126 116c31 18 45-1 35-24-6-14-20-16-29-6" />
+      <path className="cat-body" d="M51 137c-3-18-1-40 8-55 7-12 18-18 31-18 15 0 28 7 35 21 7 14 8 34 3 52Z" />
+      <path className="cat-chest" d="M70 132c-2-20 5-48 20-48s23 27 20 48c-10 5-30 5-40 0Z" />
+      <path className="cat-head" d="M42 73c-8-12-8-37-1-52 1-3 4-4 7-2l22 16c6-3 13-4 21-4 9 0 17 1 23 4l21-16c3-2 6-1 7 2 7 16 7 40-1 52-2 23-23 37-50 37S44 96 42 73Z" />
+      <path className="cat-ear-inner" d="m47 29 16 12c-8 6-13 12-16 19-2-10-2-21 0-31Zm87 0-16 12c8 6 13 12 16 19 2-10 2-21 0-31Z" />
+      <path className="cat-forehead" d="M75 39c4 4 7 9 7 15m15-15c-4 4-7 9-7 15m22-10c-5 3-8 7-10 12" />
+      <ellipse className="cat-eye-open left" cx="67" cy="70" rx="7" ry="9" />
+      <ellipse className="cat-eye-open right" cx="113" cy="70" rx="7" ry="9" />
+      <circle className="cat-eye-shine left" cx="65" cy="67" r="2" />
+      <circle className="cat-eye-shine right" cx="111" cy="67" r="2" />
+      <path className="cat-eye-smile" d="M59 70c4 5 11 5 15 0m32 0c4 5 11 5 15 0" />
+      <ellipse className="cat-blush left" cx="57" cy="84" rx="8" ry="4" />
+      <ellipse className="cat-blush right" cx="123" cy="84" rx="8" ry="4" />
+      <path className="cat-muzzle" d="M82 85c4-3 12-3 16 0-1 5-5 7-8 7s-7-2-8-7Z" />
+      <path className="cat-mouth happy" d="M90 92c-1 6-11 7-12 1m12-1c1 6 11 7 12 1" />
+      <path className="cat-mouth worried" d="M82 98c4-5 12-5 16 0" />
+      <path className="cat-whiskers" d="M49 83 25 78m25 13-25 4m106-12 24-5m-25 13 25 4" />
+      <path className="cat-paw left" d="M62 132c-2-11 2-19 9-19s10 9 8 22" />
+      <path className="cat-paw right" d="M101 135c-2-13 1-22 8-22s11 8 9 19" />
+      <circle className="cat-medal" cx="90" cy="109" r="7" />
+      <path className="cat-medal-mark" d="m87 109 2 2 4-5" />
+    </g>
+  </svg>;
+}
+
 // Animate only this text node; the dashboard does not rerender on every frame.
 function AnimatedNumber({ value }) {
   const element = useRef(null);
@@ -127,7 +165,7 @@ export default function App() {
   const [panel, setPanel] = useState('expense');
   const [fresh, setFresh] = useState(null);
   const dialog = useRef(null);
-  const orb = useRef(null);
+  const avatar = useRef(null);
   const burst = useRef(null);
   const listHeading = useRef(null);
 
@@ -150,6 +188,7 @@ export default function App() {
 
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
   const available = salary - savings - total;
+  const catMood = !salary ? 'sleepy' : available < 0 ? 'worried' : available < salary * .15 ? 'watchful' : 'content';
   const denominator = Math.max(salary, savings + total, 1);
   const filtered = expenses.filter(item => filter === 'all' || (filter === 'fixed' ? item.recurring : !item.recurring));
   const categoryTotals = categories.map(category => ({ ...category, amount: expenses.filter(item => item.category === category.id).reduce((sum, item) => sum + item.amount, 0) })).filter(item => item.amount);
@@ -164,11 +203,11 @@ export default function App() {
   };
   const celebrate = () => {
     if (reducedMotion()) return;
-    orb.current?.getAnimations().forEach(animation => animation.cancel());
-    orb.current?.animate([
-      { transform: 'rotate(-12deg) scale(1)' },
-      { transform: 'rotate(18deg) scale(1.15)', offset: .4 },
-      { transform: 'rotate(-12deg) scale(1)' },
+    avatar.current?.getAnimations().forEach(animation => animation.cancel());
+    avatar.current?.animate([
+      { transform: 'translateY(0) rotate(0) scale(1)' },
+      { transform: 'translateY(-7px) rotate(-3deg) scale(1.04)', offset: .42 },
+      { transform: 'translateY(0) rotate(0) scale(1)' },
     ], { duration: 650, easing: 'cubic-bezier(.22,1,.36,1)' });
     burst.current?.getAnimations().forEach(animation => animation.cancel());
     burst.current?.animate([{ opacity: 0, transform: 'scale(.65)' }, { opacity: 1, offset: .2 }, { opacity: 0, transform: 'scale(1.3)' }], { duration: 650 });
@@ -205,7 +244,7 @@ export default function App() {
     <main className="canvas">
       <section className="hero" aria-labelledby="balance-title">
         <div className="hero-top"><span className="eyebrow">MY LITTLE MONEY PLAN</span><button className="budget-link" onClick={() => open('budget')}>예산 설정 <Icon name="edit" size={13} /></button></div>
-        <button className="orb-button" aria-label="작은 반짝임 재생" onClick={celebrate}><span className="orb" ref={orb}><span /><span /><span /></span><span className="spark-burst" ref={burst} aria-hidden="true">✧<i>✦</i><b>✧</b></span></button>
+        <button className="avatar-button" aria-label="재정 고양이 모아와 놀기" onClick={celebrate}><span className="avatar-stage" ref={avatar}><CatAvatar mood={catMood} /></span><span className="spark-burst" ref={burst} aria-hidden="true">✧<i>✦</i><b>✧</b></span></button>
         <h1 id="balance-title">{!salary ? '나만의 여유를 만들어 볼까요?' : available < 0 ? '조금만 가볍게 해볼까요?' : '이만큼의 여유가 있어요.'}</h1>
         <p className="hero-amount"><AnimatedNumber value={available} /><span className="currency">원</span></p>
         <p className="hero-note">{!salary ? '월급을 정하면, 내 돈의 흐름이 시작돼요.' : available < 0 ? '저축 또는 지출 계획을 조정해 주세요.' : '저축과 지출 계획을 모두 제외한 금액'}</p>
